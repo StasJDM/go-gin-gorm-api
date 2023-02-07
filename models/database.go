@@ -11,8 +11,6 @@ import (
 var DB *gorm.DB
 
 func ConnectDB() {
-	var err error
-
 	host := os.Getenv("POSTGRES_HOST")
 	port := os.Getenv("POSTGRES_PORT")
 	user := os.Getenv("POSTGRES_USER")
@@ -24,11 +22,6 @@ func ConnectDB() {
 	database, err := gorm.Open(postgres.Open(dsn), &gorm.Config{})
 	if err != nil {
 		panic("Не удалось подключиться к БД")
-	}
-
-	err = database.AutoMigrate(&User{})
-	if err != nil {
-		return
 	}
 
 	DB = database
