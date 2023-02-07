@@ -1,6 +1,9 @@
 package models
 
 import (
+	"fmt"
+	"os"
+
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
 )
@@ -8,7 +11,15 @@ import (
 var DB *gorm.DB
 
 func ConnectDB() {
-	dsn := "host=127.0.0.1 port=5432 user=root dbname=api password=root sslmode=disable"
+	var err error
+
+	host := os.Getenv("POSTGRES_HOST")
+	port := os.Getenv("POSTGRES_PORT")
+	user := os.Getenv("POSTGRES_USER")
+	password := os.Getenv("POSTGRES_PASSWORD")
+	dbname := os.Getenv("POSTGRES_DB")
+
+	dsn := fmt.Sprintf("host=%s port=%s user=%s password=%s dbname=%s sslmode=disable TimeZone=Europe/Moscow", host, port, user, password, dbname)
 
 	database, err := gorm.Open(postgres.Open(dsn), &gorm.Config{})
 	if err != nil {
