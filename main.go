@@ -12,7 +12,16 @@ import (
 func main() {
 	loadEnv()
 	models.ConnectDB()
+	serveApplication()
+}
 
+func loadEnv() {
+	if err := godotenv.Load(); err != nil {
+		log.Fatal("Error load envs from .env file")
+	}
+}
+
+func serveApplication() {
 	route := gin.Default()
 
 	route.GET("/users", controllers.FindUsers)
@@ -21,11 +30,9 @@ func main() {
 	route.PATCH("/users/:id", controllers.UpdateUser)
 	route.DELETE("/users/:id", controllers.DeleteUser)
 
-	route.Run()
-}
+	route.POST("/register", controllers.Register)
+	route.POST("/login", controllers.Login)
 
-func loadEnv() {
-	if err := godotenv.Load(); err != nil {
-		log.Fatal("Error load envs from .env file")
-	}
+	route.Run(":8000")
+	route.Run("Server running on port 8000")
 }
