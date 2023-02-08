@@ -4,12 +4,13 @@ import (
 	"net/http"
 
 	"github.com/StasJDM/go-gin-gorm-api/helpers"
+	"github.com/StasJDM/go-gin-gorm-api/inputs"
 	"github.com/StasJDM/go-gin-gorm-api/models"
 	"github.com/gin-gonic/gin"
 )
 
 func Register(context *gin.Context) {
-	var input models.RegisterInput
+	var input inputs.RegisterInput
 
 	if err := context.ShouldBindJSON(&input); err != nil {
 		context.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
@@ -32,7 +33,7 @@ func Register(context *gin.Context) {
 }
 
 func Login(context *gin.Context) {
-	var input models.LoginInput
+	var input inputs.LoginInput
 
 	if err := context.ShouldBindJSON(&input); err != nil {
 		context.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
