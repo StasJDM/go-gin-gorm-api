@@ -33,6 +33,12 @@ func serveApplication() {
 	userRoutes.PATCH("/:id", controllers.UpdateUser)
 	userRoutes.DELETE("/:id", controllers.DeleteUser)
 
+	postRoutes := router.Group("/posts")
+	postRoutes.Use(middlewares.JWTAuthMiddleware())
+	postRoutes.GET("", controllers.FindPosts)
+	postRoutes.GET("/:id", controllers.FindOnePost)
+	postRoutes.POST("", controllers.CreatePost)
+
 	authRoutes := router.Group("/auth")
 	authRoutes.POST("/register", controllers.Register)
 	authRoutes.POST("/login", controllers.Login)
