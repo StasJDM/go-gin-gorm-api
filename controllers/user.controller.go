@@ -3,6 +3,7 @@ package controllers
 import (
 	"net/http"
 
+	"github.com/StasJDM/go-gin-gorm-api/inputs"
 	"github.com/StasJDM/go-gin-gorm-api/models"
 	"github.com/gin-gonic/gin"
 )
@@ -17,63 +18,70 @@ type UpdateUserInput struct {
 	Email    string `json:"email"`
 }
 
-func FindUsers(c *gin.Context) {
-	var users []models.User
-	models.DB.Find(&users)
+func FindUsers(context *gin.Context) {
+	var pagination inputs.PaginationInput
 
-	c.JSON(http.StatusOK, gin.H{"data": users})
-}
-
-func FindOneUser(c *gin.Context) {
-	var user models.User
-
-	if err := models.DB.Where("id = ?", c.Param("id")).First(&user).Error; err != nil {
-		c.JSON(http.StatusNotFound, gin.H{"error": "Record not found"})
+	if err := context.ShouldBindQuery(&pagination); err != nil {
+		context.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
 
-	c.JSON(http.StatusOK, gin.H{"data": user})
+	var users []models.User
+	models.DB.Limit(pagination.Limit()).Offset(pagination.Offset()).Find(&users)
+
+	context.JSON(http.StatusOK, gin.H{"data": users})
 }
 
-func CreateUser(c *gin.Context) {
+func FindOneUser(context *gin.Context) {
+	var user models.User
+
+	if err := models.DB.Where("id = ?", context.Param("id")).First(&user).Error; err != nil {
+		context.JSON(http.StatusNotFound, gin.H{"error": "Record not found"})
+		return
+	}
+
+	context.JSON(http.StatusOK, gin.H{"data": user})
+}
+
+func CreateUser(context *gin.Context) {
 	var input CreateUserInput
 
-	if err := c.ShouldBindJSON(&input); err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+	if err := context.ShouldBindJSON(&input); err != nil {
+		context.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
 
 	user := models.User{Username: input.Username, Email: input.Email}
 	models.DB.Create(&user)
 
-	c.JSON(http.StatusCreated, gin.H{"data": user})
+	context.JSON(http.StatusCreated, gin.H{"data": user})
 }
 
-func UpdateUser(c *gin.Context) {
+func UpdateUser(context *gin.Context) {
 	var user models.User
-	if err := models.DB.Where("id = ?", c.Param("id")).First(&user).Error; err != nil {
-		c.JSON(http.StatusNotFound, gin.H{"error": "Record not found"})
+	if err := models.DB.Where("id = ?", context.Param("id")).First(&user).Error; err != nil {
+		context.JSON(http.StatusNotFound, gin.H{"error": "Record not found"})
 		return
 	}
 
 	var input UpdateUserInput
-	if err := c.ShouldBindJSON(&input); err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+	if err := context.ShouldBindJSON(&input); err != nil {
+		context.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 	}
 
 	models.DB.Model(&user).Updates(models.User{Username: input.Username, Email: input.Email})
 
-	c.JSON(http.StatusOK, gin.H{"data": user})
+	context.JSON(http.StatusOK, gin.H{"data": user})
 }
 
-func DeleteUser(c *gin.Context) {
+func DeleteUser(context *gin.Context) {
 	var user models.User
-	if err := models.DB.Where("id = ?", c.Param("id")).First(&user).Error; err != nil {
-		c.JSON(http.StatusNotFound, gin.H{"error": "Record not found"})
+	if err := models.DB.Where("id = ?", context.Param("id")).First(&user).Error; err != nil {
+		context.JSON(http.StatusNotFound, gin.H{"error": "Record not found"})
 		return
 	}
 
 	models.DB.Delete(&user)
 
-	c.JSON(http.StatusOK, gin.H{"data": true})
+	context.JSON(http.StatusOK, gin.H{"data": true})
 }

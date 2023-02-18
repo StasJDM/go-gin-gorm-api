@@ -32,8 +32,15 @@ func CreatePost(context *gin.Context) {
 }
 
 func FindPosts(context *gin.Context) {
+	var pagination inputs.PaginationInput
+
+	if err := context.ShouldBindQuery(&pagination); err != nil {
+		context.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+
 	var posts []models.Post
-	models.DB.Find(&posts)
+	models.DB.Limit(pagination.Limit()).Offset(pagination.Offset()).Find(&posts)
 
 	context.JSON(http.StatusOK, gin.H{"data": posts})
 }
