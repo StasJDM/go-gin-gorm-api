@@ -4,12 +4,21 @@ import (
 	"log"
 
 	"github.com/StasJDM/go-gin-gorm-api/controllers"
+	_ "github.com/StasJDM/go-gin-gorm-api/docs"
 	"github.com/StasJDM/go-gin-gorm-api/middlewares"
 	"github.com/StasJDM/go-gin-gorm-api/models"
 	"github.com/gin-gonic/gin"
 	"github.com/joho/godotenv"
+	swaggerfiles "github.com/swaggo/files"
+	ginSwagger "github.com/swaggo/gin-swagger"
 )
 
+// @title           Swagger API
+// @version         1.0
+
+// @host      localhost:8000
+
+// @securityDefinitions.basic  BasicAuth
 func main() {
 	loadEnv()
 	models.ConnectDB()
@@ -24,6 +33,8 @@ func loadEnv() {
 
 func serveApplication() {
 	router := gin.Default()
+
+	router.GET("/docs/*any", ginSwagger.WrapHandler(swaggerfiles.Handler))
 
 	userRoutes := router.Group("/users")
 	userRoutes.Use(middlewares.JWTAuthMiddleware())

@@ -9,6 +9,20 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
+type JWTResponse struct {
+	JWT string `json:"jwt"`
+}
+
+// Register godoc
+// @Summary Register
+// @Schemes
+// @Description Register user
+// @Tags auth
+// @Accept json
+// @Produce json
+// @Param user body inputs.RegisterInput true "Register data"
+// @Success 200 {object} JWTResponse "jwt"
+// @Router /auth/register [post]
 func Register(context *gin.Context) {
 	var input inputs.RegisterInput
 
@@ -32,6 +46,16 @@ func Register(context *gin.Context) {
 	context.JSON(http.StatusCreated, gin.H{"user": savedUser})
 }
 
+// Login godoc
+// @Summary Login
+// @Schemes
+// @Description Login using username and password
+// @Tags auth
+// @Accept json
+// @Produce json
+// @Param user body inputs.LoginInput true "Login data"
+// @Success 200 {object} JWTResponse "jwt"
+// @Router /auth/login [post]
 func Login(context *gin.Context) {
 	var input inputs.LoginInput
 

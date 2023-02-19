@@ -9,6 +9,16 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
+// Create post godoc
+// @Summary Create post
+// @Schemes
+// @Description Create post
+// @Tags posts
+// @Accept json
+// @Produce json
+// @Param user body inputs.CreatePostInput true "Post json"
+// @Success 200 {object} models.Post
+// @Router /posts [post]
 func CreatePost(context *gin.Context) {
 	var input inputs.CreatePostInput
 	if err := context.ShouldBindJSON(&input); err != nil {
@@ -31,6 +41,16 @@ func CreatePost(context *gin.Context) {
 	context.JSON(http.StatusCreated, gin.H{"data": post})
 }
 
+// Find all posts godoc
+// @Summary Find all posts
+// @Schemes
+// @Description Fetch all posts (with pagination)
+// @Tags posts
+// @Accept json
+// @Produce json
+// @Param pagination query inputs.PaginationInput true "Post id"
+// @Success 200 {array} models.Post
+// @Router /posts [get]
 func FindPosts(context *gin.Context) {
 	var pagination inputs.PaginationInput
 
@@ -45,6 +65,16 @@ func FindPosts(context *gin.Context) {
 	context.JSON(http.StatusOK, gin.H{"data": posts})
 }
 
+// Find post by id godoc
+// @Summary Find post by id
+// @Schemes
+// @Description Find one post by id
+// @Tags posts
+// @Accept json
+// @Produce json
+// @Param id path int true "Post id"
+// @Success 200 {object} models.Post
+// @Router /posts/{id} [get]
 func FindOnePost(context *gin.Context) {
 	var post models.Post
 
