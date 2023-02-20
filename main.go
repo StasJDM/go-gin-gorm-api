@@ -3,6 +3,7 @@ package main
 import (
 	"log"
 
+	"github.com/StasJDM/go-gin-gorm-api/cache"
 	"github.com/StasJDM/go-gin-gorm-api/controllers"
 	_ "github.com/StasJDM/go-gin-gorm-api/docs"
 	"github.com/StasJDM/go-gin-gorm-api/middlewares"
@@ -22,6 +23,7 @@ import (
 func main() {
 	loadEnv()
 	models.ConnectDB()
+	cache.ConnectRedis()
 	serveApplication()
 }
 

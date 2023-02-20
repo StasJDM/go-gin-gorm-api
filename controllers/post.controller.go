@@ -2,12 +2,16 @@ package controllers
 
 import (
 	"net/http"
+	"time"
 
+	"github.com/StasJDM/go-gin-gorm-api/cache"
 	"github.com/StasJDM/go-gin-gorm-api/helpers"
 	"github.com/StasJDM/go-gin-gorm-api/inputs"
 	"github.com/StasJDM/go-gin-gorm-api/models"
 	"github.com/gin-gonic/gin"
 )
+
+const POST_CACHE_PREFIX = "POST_"
 
 // Create post godoc
 // @Summary Create post
@@ -77,10 +81,19 @@ func FindPosts(context *gin.Context) {
 // @Router /posts/{id} [get]
 func FindOnePost(context *gin.Context) {
 	var post models.Post
+	postId := context.Param("id")
 
-	if err := models.DB.Where("id = ?", context.Param("id")).First(&post).Error; err != nil {
+	err := cache.GetFromCache(POST_CACHE_PREFIX+postId, post)
+	if err == nil {
+		context.JSON(http.StatusOK, gin.H{"data": post})
+		return
+	}
+
+	if err := models.DB.Where("id = ?", postId).First(&post).Error; err != nil {
 		context.JSON(http.StatusNotFound, gin.H{"error": "Record not found"})
 	}
+
+	cache.SaveToCache(POST_CACHE_PREFIX+postId, post, time.Hour)
 
 	context.JSON(http.StatusOK, gin.H{"data": post})
 }
